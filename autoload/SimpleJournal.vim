@@ -1,11 +1,11 @@
 
-function! s:JournalCheckOpts()
+function! JournalCheckOpts()
     if !exists('g:journal_location')
         echo "Please set `g:journal_location` in .vimrc"
     endif
 endfunction
 
-function! s:JournalUpdateIndex()
+function! SimpleJournal#JournalUpdateIndex()
     call JournalCheckOpts()
     let l:target = g:journal_location.'/index.md'
     exec 'cd '.expand(g:journal_location)
@@ -50,7 +50,7 @@ function! s:JournalUpdateIndex()
     exec 'write | cd '.g:journal_location.' | edit '.expand(l:target)
 endfunction
 
-function! s:JournalAddLink()
+function! SimpleJournal#JournalAddLink()
     call JournalCheckOpts()
     redraw
     let l:link_name = input('Enter link name : ')
@@ -70,7 +70,7 @@ endfunction
 
 
 
-function! s:JournalNewFile()
+function! SimpleJournal#JournalNewFile()
     call JournalCheckOpts()
 
     redraw
@@ -119,7 +119,7 @@ endfunction
 " call JournalNewFile()
 
 
-function! s:JournalNewFigureIPE()
+function! SimpleJournal#JournalNewFigureIPE()
     call JournalCheckOpts()
     redraw
     let l:name = input('Enter name of Figure : ')
@@ -143,7 +143,7 @@ function! s:JournalNewFigureIPE()
 endfunction
 " call JournalNewFigureIPE()
 
-function! s:JournalMakePDF()
+function! SimpleJournal#JournalMakePDF()
     let l:pdf_name = expand('%:r').'.pdf'
     let l:pdf_dir = expand('%:p:h').'/pdf'
     let l:pdf_path = l:pdf_dir.'/'.l:pdf_name
@@ -162,3 +162,6 @@ function! s:JournalMakePDF()
         \ "-V 'geometry:margin=2cm' ".
         \ "-o ".l:pdf_path
 endfunction
+
+
+
