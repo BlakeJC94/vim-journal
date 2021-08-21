@@ -102,6 +102,8 @@ g:journal_location = [path to journal]
 
 I primarily use Ubuntu 21.04 and Neovim 5.0.0, but this should be compatible with at least Vim 8. The only dependencies are standard GNU `find` and `grep` tools which is built into most Linux distros (and Macs? Don't have a Mac to test).
 
+The commands `:JPdf` and `:JDraw` require recent installations of `pandoc`, `xelatex`, and `ipe`.
+
 Pull requests are welcome if you would like to extend compatibility to Mac OS or Windows.
 
 
@@ -111,6 +113,17 @@ In your `.vimrc` or `init.nvim`, set the line
 ```
 g:journal_location = [path to journal]
 ```
+
+Then after loading the plugin, the following commands are available:
+
+| Command    | Description                                                                                                                                           |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `:Journal` | Updates and opens `index.md`, changes working directory to `g:journal_location`                                                                       |
+| `:JFile`   | Prompts user for `directory` and `filename` and opens new buffer at `g:journal_location/directory/filename.md`                                        |
+| `:JLink`   | Prompts user for `link_name` and `link_dest` and inserts `[link_name](link_dest) at cursor                                                            |
+| `:JPdf`    | Compiles current `.md` file to a `.pdf` using `pandoc` and `xelatex`, saved in `g:journal_location/directory/pdf/filename.md`                  |
+| `:JDraw`   | Prompts user for `fig_name`, inserts `![fig_name](g:journal_location/directory/img/fig_name.pdf)` at cursor, and launches `ipe` to edit figure |
+
 
 ## Resources/Further reading for Markdown journalling
 

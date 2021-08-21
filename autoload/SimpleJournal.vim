@@ -1,6 +1,5 @@
 
 function! SimpleJournal#UpdateIndex() abort
-
     let l:journal_location = get(g:, 'journal_location')
     if l:journal_location == '0'
         echo "Please set `g:journal_location` in .vimrc"
@@ -81,7 +80,7 @@ function! SimpleJournal#UpdateIndex() abort
     return 0
 endfunction
 
-function! SimpleJournal#JournalAddLink()
+function! SimpleJournal#AddLink() abort
     redraw
     let l:link_name = input('Enter link name : ')
     let l:link_name = substitute(l:link_name, '\s\+$', '', 'g')
@@ -100,8 +99,7 @@ endfunction
 
 
 
-function! SimpleJournal#JournalNewFile()
-
+function! SimpleJournal#NewFile() abort
     redraw
     let l:dir = input('Enter name of directory : '.g:journal_location.'/')
     redraw
@@ -143,12 +141,11 @@ function! SimpleJournal#JournalNewFile()
     endtry
     exec 'edit '. expand(l:file_path)
     norm! G
-
 endfunction
 " call JournalNewFile()
 
 
-function! SimpleJournal#JournalNewFigureIPE()
+function! SimpleJournal#NewFigureIPE() abort
     redraw
     let l:name = input('Enter name of Figure : ')
     let l:name = substitute(l:name, '\w', '\U&', '')
@@ -171,7 +168,7 @@ function! SimpleJournal#JournalNewFigureIPE()
 endfunction
 " call JournalNewFigureIPE()
 
-function! SimpleJournal#JournalMakePDF()
+function! SimpleJournal#MakePDF() abort
     let l:pdf_name = expand('%:r').'.pdf'
     let l:pdf_dir = expand('%:p:h').'/pdf'
     let l:pdf_path = l:pdf_dir.'/'.l:pdf_name
