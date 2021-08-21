@@ -50,6 +50,8 @@ The basic rules I use are :
 - `[ARCHIVED]` is a spot to move notes/dirs when no longer active
     - *These files are ignored by `simple-journal`*
 
+**All filenames and directories must have no spaces (underscores only).**
+
 
 The index is automatically updated by using `find` and `grep` in the shell. This is an example index generated for the above structure:
 ```

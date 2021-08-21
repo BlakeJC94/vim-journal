@@ -1,21 +1,26 @@
 
-function! JournalCheckOpts()
-    if !exists('g:journal_location')
-        echo "Please set `g:journal_location` in .vimrc"
-    endif
-endfunction
+function! SimpleJournal#UpdateIndex() abort
 
-function! SimpleJournal#JournalUpdateIndex()
-    call JournalCheckOpts()
-    let l:target = g:journal_location.'/index.md'
+    let l:journal_location = get(g:, 'journal_location')
+    if l:journal_location == '0'
+        echo "Please set `g:journal_location` in .vimrc"
+        return 1
+    endif
+
+    " Make sure each *.md file has no spaces
+
+
+    let l:target = l:journal_location.'/index.md'
     exec 'cd '.expand(g:journal_location)
     let l:listing = split(system("find . -regex  ".
         \ "'\\.".
         \ "\\(\\/[^\\/\\.]+\\)".
         \ "\\(\\/[^\\/]+\\.md\\)?' ".
-        \ "! \\( -path '*pdf*' -o -name '*ARCHIVED*' -o -path '*/img*' \\) ".
-        \ " | sort"))
+        \ "! \\( -ipath '*pdf*' -o -iname '*ARCHIVED*' -o -iname '*makefile*' -o -ipath '*/img*' \\) ".
+        \ " | sort"), '\n')
     " echo l:listing
+    " for
+    " if count()
 
     " write header
     let l:header = "# Journal index \n\n".
@@ -24,34 +29,59 @@ function! SimpleJournal#JournalUpdateIndex()
     call writefile(split(l:header, '\n', 1), expand(l:target))
 
     " write contents
-    for i in l:listing
-        if i[-3:] != ".md"
-            let l:result = substitute(i, '\.\/', '* ', 'g')
+    for l:path in l:listing
+        if l:path[-3:] != ".md"
+            let l:result = substitute(l:path, '\.\/', '* ', 'g')
+            let l:result = substitute(l:result, '_', ' ', 'g')
             let l:result = substitute(l:result, '\w', '\u&', '')
             call writefile([l:result], expand(l:target), 'a')
         endif
     endfor
 
     " write full contents
-    for i in l:listing
-        " process i here
-        if i[-3:] == ".md"
-            let l:heading = system("grep -m 1 -e '#\\+\\s\\+' ".i)
+    for l:path in l:listing
+        " process l:path here
+        if l:path[-3:] == ".md"
+
+            " let l:count_spaces = count(substitute(l:path, '^\..*\/', '', ''), " ")
+            let l:count_spaces = count(l:path, " ")
+            if l:count_spaces > 0
+                echo "Warning: File " . l:path . "Has spaces, `gf` wont work on link"
+            endif
+            " note: this snippet replaces spaces in filename only, might be
+            " useful later?
+            " let l:path = substitute(l:path, '\(\w*\) \(\w*\)', '\1_\2', 'g')
+            " This does it in a loop
+            " for j in range(1, l:count_spaces)
+            "     let l:path = substitute(l:path, '\(.*\) \(.*\.md\)', '\1_\2', '')
+            " endfor
+            " TODO replace all spaces with underscores,
+            " echo "TRACE : " l:count_spaces
+
+            let l:heading = system("grep -m 1 -e '#\\+\\s\\+' ".l:path)
             let l:heading = substitute(l:heading, '\(#\+\s\)\|\n', '', 'g')
-            let l:result = "- [".l:heading."](".i.")"
+            let l:result = "- [".l:heading."](".l:path.")"
         else
-            let l:result = substitute(i, '\.\/', '', 'g')
+            let l:result = substitute(l:path, '\.\/', '', 'g')
+            let l:result = substitute(l:result, '_', ' ', 'g')
             let l:result = substitute(l:result, '\w', '\n\n## \u&', '')
         endif
         " echo l:result
         call writefile(split(l:result, '\n', 1), expand(l:target), 'a')
     endfor
 
-    exec 'write | cd '.g:journal_location.' | edit '.expand(l:target)
+    echo "Updated ".l:target
+
+    try
+        exec 'cd '.g:journal_location.' | edit '.expand(l:target)
+    catch /.*/
+        echo "Save changes to current buffer and try again"
+        return 1
+    endtry
+    return 0
 endfunction
 
 function! SimpleJournal#JournalAddLink()
-    call JournalCheckOpts()
     redraw
     let l:link_name = input('Enter link name : ')
     let l:link_name = substitute(l:link_name, '\s\+$', '', 'g')
@@ -71,7 +101,6 @@ endfunction
 
 
 function! SimpleJournal#JournalNewFile()
-    call JournalCheckOpts()
 
     redraw
     let l:dir = input('Enter name of directory : '.g:journal_location.'/')
@@ -120,7 +149,6 @@ endfunction
 
 
 function! SimpleJournal#JournalNewFigureIPE()
-    call JournalCheckOpts()
     redraw
     let l:name = input('Enter name of Figure : ')
     let l:name = substitute(l:name, '\w', '\U&', '')

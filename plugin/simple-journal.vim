@@ -1,2 +1,2 @@
 
-command! Journal call SimpleJournal#JournalUpdateIndex()
+command! Journal call SimpleJournal#UpdateIndex()
